@@ -5,9 +5,28 @@ import java.util.List;
 public class Teste {
 
 	public static void main(String[] args) {
-		Gerador gerador = new Gerador();
+		Gerador PosGerador = new Gerador();
+		Gerador NegGerador = new Gerador();
+		Gerador TestGerador = new Gerador();
+		try{
+			
+			PosGerador.abrirArquivo("Pos.csv");
+			NegGerador.abrirArquivo("Neg.csg");
+			TestGerador.abrirArquivo("Test.csv");
+			PosGerador.gerarLinhas();
+			NegGerador.gerarLinhas();
+			TestGerador.gerarLinhas();
+			
+			
+			
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 
-		try {
+		/*try {
 			gerador.abrirArquivo();
 			List<Integer> indices = new ArrayList<Integer>();
 			List<String> palavras = new ArrayList<String>();
@@ -74,7 +93,7 @@ public class Teste {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		}*/
 
 	}
 }
