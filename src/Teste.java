@@ -5,9 +5,9 @@ import java.util.List;
 public class Teste {
 
 	public static void main(String[] args) {
-		Gerador PosGerador = new Gerador();
-		Gerador NegGerador = new Gerador();
-		Gerador TestGerador = new Gerador();
+		LeitorArquivo PosGerador = new LeitorArquivo();
+		LeitorArquivo NegGerador = new LeitorArquivo();
+		LeitorArquivo TestGerador = new LeitorArquivo();
 		try{
 			
 			PosGerador.abrirArquivo("Pos.csv");

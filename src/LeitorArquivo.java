@@ -6,13 +6,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Gerador {
+public class LeitorArquivo {
 
 	private BufferedReader br;
 	private boolean acabou = false;
 	private List<String[]> linhasSeparadas;
 
-	public Gerador() {
+	public LeitorArquivo() {
 		linhasSeparadas = new ArrayList<>();
 	}
 
