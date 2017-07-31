@@ -11,14 +11,37 @@ public class Teste {
 		try{
 			
 			PosGerador.abrirArquivo("Pos.csv");
-			NegGerador.abrirArquivo("Neg.csg");
-			TestGerador.abrirArquivo("Test.csv");
+			NegGerador.abrirArquivo("Neg.csv");
+			TestGerador.abrirArquivo("Test.csv");		//Apenas a primeira review está sendo testada
 			PosGerador.gerarLinhas();
 			NegGerador.gerarLinhas();
 			TestGerador.gerarLinhas();
 			
+			NaiveBayes NB = new NaiveBayes();
 			
+			for(int i = 1; i < PosGerador.getLinhas().size(); i++){ //começa de 1 porque a linha 0 só tem palavras
+				NB.treinaPositivo(PosGerador.getLinhas().get(i));
+			}
+			for(int i = 1; i < PosGerador.getLinhas().size(); i++){ //começa de 1 porque a linha 0 só tem palavras
+				NB.treinaNegativo(NegGerador.getLinhas().get(i));
+			}
 			
+			double probpos = 0;
+			double probneg = 0;
+			
+			for(int i = 1; i < TestGerador.getLinhas().get(0).length; i++){
+				String palavra = TestGerador.getLinhas().get(0)[i];
+				double valor = Double.parseDouble(TestGerador.getLinhas().get(1)[i]);	//TESTANDO APENAS A PRIMEIRA REVIEW DE Test.csv
+				probpos = probpos + NB.generateDensPos(palavra, PosGerador.getLinhas().get(0), valor);
+				probneg = probneg + NB.generateDensNeg(palavra, NegGerador.getLinhas().get(0), valor);
+			}
+			
+			if(probpos>probneg){
+				System.out.println("Positivo!");
+			} else if(probpos<probneg){
+				System.out.println("Negativo!");
+			} else
+				System.out.println("Empate!");
 			
 			
 		} catch (Exception e) {

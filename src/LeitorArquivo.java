@@ -59,14 +59,6 @@ public class LeitorArquivo {
 		return linhasep;
 	}
 	
-	private float [] medias;
-	
-	public void gerarMedias(){		//gerar as medias das palavras. A palavra na posição linhas.get(0)[x] vai ter sua média em medias[x] (medias[0] vai ficar vazio por causa do atirbuto nome)
-		//acho que aqui tem outro for. Um para percorrer as palavras e outro para percorrer as linhas
-		for(int i = 1; i<linhas.size(); i++){	//começa de 1 por causa do atirbuto nome que não importa
-			//PAREI AQUI -> SOMAR TODOS OS VALORES DE CADA LINHA PARA E DIVIDIR PELO NUMERO DE LINHAS PARA CADA PALAVRA. GUARDAR ESSA MÉDIA EM medias[i]
-		}
-	}
 
 	/*public String[] separadorDeLinha(String entrada) {
 		if (entrada != null) {
