@@ -4,11 +4,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.math.*;
 
 public class NaiveBayes {
-	// Guarda as posições das palavras que lê na primeira linha do arquivo,
-	// talvez nãp precise
-	private Map<Integer, String> palavras = new HashMap<>();
 
 	// Guarda a média da palvra que aparece naquela posição
 	private Map<Integer, Double> positivosMedia = new HashMap<>();
@@ -27,21 +25,13 @@ public class NaiveBayes {
 
 	// Lista com os valores para o calculo do desvio
 	private List<ArrayList<Double>> listaValoresNegativos = new ArrayList<>();
-	
-	// Guarda as densidades usadas em NaiveBayes(pos)
-	private Map<Integer, Double> negativosDens = new HashMap<>();
-		
-	// Guarda as densidades usadas em NaiveBayes(neg)
-	private Map<Integer, Double> positivosDens = new HashMap<>();
 
 	private int totalPositivo = 0;// total de exemplos positivos
 	private int totalNegativo = 0;// total de exemplos negativos
 
-	/*public NaiveBayes(Map<Integer, String> palavras) {
-		this.palavras = palavras;
-
+	public NaiveBayes(int tamanho) {
 		// inicializa as médias e os desvios como 0
-		for (int i = 0; i < this.palavras.size(); i++) {
+		for (int i = 0; i < tamanho; i++) {
 			positivosMedia.put(i, 0.0);
 			positivosDev.put(i, 0.0);
 
@@ -51,40 +41,8 @@ public class NaiveBayes {
 			listaValoresPositivos.add(new ArrayList<Double>());
 			listaValoresNegativos.add(new ArrayList<Double>());
 		}
-	}*/
+	}
 
-	public double generateDensPos(String palavra, String [] linha0, double x){		//gerar a densidade posi da palavra com valor x a ser testado
-		double i=-50;		//valor aleatorio apenas pra confirmar se encontrou a palavra
-		for(int k = 1; k < linha0.length; k++){  //k = 1 pq o primeiro atributo é o nome do doc
-			if(linha0[k].equals(palavra)){		//encontrando o indice da palavra para usar positivosMedia/Dev
-				i = k;
-				break;
-			}
-		}
-		double densi = 0;
-		if(i!=-50)			//se encontrou a palavra
-			densi = (1/Math.sqrt(2*Math.PI)*positivosDev.get(i)) * Math.pow(Math.E, -(Math.pow(x-positivosMedia.get(i), 2)/2*Math.pow(positivosDev.get(i), 2)) );
-		return densi;
-	}
-	
-	public double generateDensNeg(String palavra, String [] linha0, double x){		//gerar a densidade posi da palavra com valor x a ser testado
-		double i=-50;				//valor aleatorio apenas pra confirmar se encontrou a palavra
-		for(int k = 1; k < linha0.length; k++){  //k = 1 pq o primeiro atributo é o nome do doc
-			if(linha0[k].equals(palavra)){		//encontrando o indice da palavra para usar negativosMedia/Dev
-				i = k;
-				break;
-			}
-		}
-		double densi = 0;
-		if(i!=-50)
-			densi = (1/Math.sqrt(2*Math.PI)*negativosDev.get(i)) * Math.pow(Math.E, -(Math.pow(x-negativosMedia.get(i), 2)/2*Math.pow(negativosDev.get(i), 2)) );
-		return densi;
-	}
-	
-	public void generateDensNeg(){
-		
-	}
-	
 	private double Media(double novoValor, double mediaAtual, int total) {
 		double media = (novoValor + mediaAtual) / total;
 		return media;
@@ -95,14 +53,39 @@ public class NaiveBayes {
 		for (Double valor : valores) {
 			temp += (valor - media) * (valor - media);
 		}
-		double variancia = temp / (total-1);
+		double variancia = temp / (total);
 		double desvio = Math.sqrt(variancia);
 		return desvio;
 	}
 
+	private double Densidade(int palavra, double valor, String classific) {
+		Map<Integer, Double> auxMedia;
+		Map<Integer, Double> auxDev;
+		if (classific.equals("positivo")) {
+			auxMedia = positivosMedia;
+			auxDev = positivosDev;
+		} else {
+			auxMedia = negativosMedia;
+			auxDev = negativosDev;
+		}
+
+		double densidade = 0.0;
+
+		double dividendo = (Math.pow(Math.E,
+				-(Math.pow(valor - auxMedia.get(palavra), 2)) / (2 * Math.pow(auxDev.get(palavra), 2))));
+
+		double divisor = (auxDev.get(palavra) * Math.sqrt(2 * Math.PI));
+
+		if (divisor != 0)
+			densidade = dividendo / divisor;
+
+		return densidade;
+	}
+
 	public void treinaPositivo(String[] linha) {
 		totalPositivo++;
-		for (int i = 1; i < linha.length; i++) {		//i = 1 pq o primeiro atributo é o nome do doc
+		for (int i = 1; i < linha.length; i++) { // i = 1 pq o primeiro atributo
+													// é o nome do doc
 			double valor = Double.parseDouble(linha[i]);
 			double media = positivosMedia.get(i);
 			double novaMedia = Media(valor, media, totalPositivo);
@@ -116,7 +99,8 @@ public class NaiveBayes {
 
 	public void treinaNegativo(String[] linha) {
 		totalNegativo++;
-		for (int i = 1; i < linha.length; i++) {		//i = 1 pq o primeiro atributo é o nome do doc
+		for (int i = 1; i < linha.length; i++) { // i = 1 pq o primeiro atributo
+													// é o nome do doc
 			double valor = Double.parseDouble(linha[i]);
 			double media = negativosMedia.get(i);
 			double novaMedia = Media(valor, media, totalNegativo);
@@ -128,9 +112,21 @@ public class NaiveBayes {
 		}
 	}
 
-	public String classifica(String[] texto) {
-		
-		return "";
+	public String classificar(String[] texto) {
+		double scorePos = 0.0;
+		double scoreNeg = 0.0;
+
+		for (int i = 1; i < texto.length; i++) {
+			scorePos += Densidade(i, Double.parseDouble(texto[i]), "positivo");
+			scoreNeg += Densidade(i, Double.parseDouble(texto[i]), "negativo");
+		}
+		System.out.println("score pos: " + scorePos);
+		System.out.println("score neg: " + scoreNeg);
+
+		if (scorePos >= scoreNeg)
+			return "Positivo";
+		else
+			return "Negativo";
 	}
 
 }

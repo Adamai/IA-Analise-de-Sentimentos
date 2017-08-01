@@ -10,10 +10,10 @@ public class LeitorArquivo {
 
 	private BufferedReader br;
 	private boolean acabou = false;
-	private List<String[]> linhasSeparadas;
+	private List<String[]> linhas;
 
 	public LeitorArquivo() {
-		linhasSeparadas = new ArrayList<>();
+		linhas = new ArrayList<>();
 	}
 
 	public boolean abrirArquivo(String nomearquivo) throws FileNotFoundException {
@@ -22,7 +22,7 @@ public class LeitorArquivo {
 		return f.exists();
 	}
 
-	public String lerLinha() throws IOException {  //se da close então ele só serve pra ler a primeira linha?
+	private String lerLinha() throws IOException {
 		String ret;
 		if ((ret = br.readLine()) == null) {
 			br.close();
@@ -30,62 +30,23 @@ public class LeitorArquivo {
 		}
 		return ret;
 	}
-	
-	private ArrayList<String []> linhas = new ArrayList();
-	
-	public void gerarLinhas(){		//preencher o arraylist linhas com as linhas do arquivo
-		String linha;
-		int k=0;
+
+	public void lerArquivo() {
 		try {
-			while(k==0){
-			linha = br.readLine();
-			if(linha!=null){
-				linhas.add(separadorLinha(linha));
-				} else
-					k=1;
+			String linha;
+			while (!acabou) {
+				linha = lerLinha();
+				if (linha != null) {
+					String[]linhaSeparada = linha.split(";");
+					linhas.add(linhaSeparada);
+				}
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 	}
-	
-	public ArrayList<String []> getLinhas(){		//para usar o arraylist linhas em outras classes
+
+	public List<String[]> getLinhas() {
 		return linhas;
 	}
-	
-	private String[] separadorLinha(String linha){		//separar uma linha pelos ';'
-		String [] linhasep = linha.split(";");
-		return linhasep;
-	}
-	
-
-	/*public String[] separadorDeLinha(String entrada) {
-		if (entrada != null) {
-			String[] pedacos = entrada.split(";");
-			String[] linha = this.lerLinha().split(";");
-			String[] result = new String[13];
-			for (int i = 0; i < 13; i++) {
-				String[] aux = pedacos[i].split("\"");
-				result[i] = aux[1];
-			}
-			return result;
-		} else
-			return null;
-	}*/
-	
-	/*public boolean lerArquivo() throws IOException {
-		while (!acabou) {
-			String novaLinha = lerLinha(); 
-			String[] linhaSeparada = separadorDeLinha(novaLinha);
-			if (linhaSeparada != null)
-				linhasSeparadas.add(linhaSeparada);
-		}
-		return true;
-	}*/
-	
-	/*public List<String[]> getLinhas() {
-		return linhasSeparadas;
-	}*/
-
 }
