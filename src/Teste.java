@@ -1,6 +1,9 @@
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Teste {
 
@@ -11,7 +14,8 @@ public class Teste {
 			leitor.abrirArquivo("entrada.csv");
 			leitor.lerArquivo();
 			List<String[]> linhas = leitor.getLinhas();
-
+			Collections.shuffle(linhas);
+			
 			// Passa a quantidade de palavras como parametro
 			NaiveBayes NB = new NaiveBayes(linhas.get(0).length);
 
@@ -24,27 +28,39 @@ public class Teste {
 			for (String[] linha : linhas) {
 				if (linha[0].contains("document")) {
 					// primeira linha, não faz nada
-				} else if (linha[0].contains("positivo") && qtdPos < 750) {
+				} else if (linha[0].contains("positivo") && qtdPos < 600) {
 					NB.treinaPositivo(linha);
 					qtdPos++;
-				} else if (linha[0].contains("negativo") && qtdNeg < 750) {
+				} else if (linha[0].contains("negativo") && qtdNeg < 600) {
 					NB.treinaNegativo(linha);
 					qtdNeg++;
 				} else {
 					execucao.add(linha);
 				}
 			}
+			
+			NB.aprender();
+			
+//			StringBuffer resposta = new StringBuffer();
+//			for(int i = 1; i < 600; i++){
+//				resposta.append(NB.positivosMedia.get(i));
+//				resposta.append("\n");
+//			}			
+//			System.out.println(resposta.toString());
 
-			//// for (String[] entrada : execucao) {
-			//// String resultado = NB.classificar(entrada);
-			//// System.out.println(resultado);
-			//// }
-			for (int i = 0; i < 100; i++) {
+			int countPos = 0;
+			int countNeg = 0;
+			for (int i = 0; i < 800; i++) {
 				String resultado = NB.classificar(execucao.get(i));
-				String[] linha = execucao.get(i);
-				System.out.println("Era " + linha[0]);
-				System.out.println("Classificou como : " + resultado);
+				if(resultado.equals("Positivo"))
+					countPos++;
+				else
+					countNeg++;
+//				String[] linha = execucao.get(i);
+//				System.out.println("Era " + linha[0]);
+//				System.out.println("Classificou como : " + resultado);
 			}
+			System.out.println("Positivos: " + countPos+", " + "Negativos: "+countNeg);
 
 		} catch (Exception e) {
 			e.printStackTrace();

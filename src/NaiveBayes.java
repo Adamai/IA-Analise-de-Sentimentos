@@ -9,19 +9,19 @@ import java.math.*;
 public class NaiveBayes {
 
 	// Guarda a média da palvra que aparece naquela posição
-	private Map<Integer, Double> positivosMedia = new HashMap<>();
+	public Map<Integer, Double> positivosMedia = new HashMap<>();
 
 	// Guarda o desvio da palavra que aparece naquela posição
-	private Map<Integer, Double> positivosDev = new HashMap<>();
+	public Map<Integer, Double> positivosDev = new HashMap<>();
 
 	// Lista com os valores para o calculo do desvio
 	private List<ArrayList<Double>> listaValoresPositivos = new ArrayList<>();
 
 	// Guarda a média da palavra que aparece naquela posição
-	private Map<Integer, Double> negativosMedia = new HashMap<>();
+	public Map<Integer, Double> negativosMedia = new HashMap<>();
 
 	// Guarda o desvio da palavra que aparece naquela posição
-	private Map<Integer, Double> negativosDev = new HashMap<>();
+	public Map<Integer, Double> negativosDev = new HashMap<>();
 
 	// Lista com os valores para o calculo do desvio
 	private List<ArrayList<Double>> listaValoresNegativos = new ArrayList<>();
@@ -30,30 +30,26 @@ public class NaiveBayes {
 	private int totalNegativo = 0;// total de exemplos negativos
 
 	public NaiveBayes(int tamanho) {
-		// inicializa as médias e os desvios como 0
 		for (int i = 0; i < tamanho; i++) {
-			positivosMedia.put(i, 0.0);
-			positivosDev.put(i, 0.0);
-
-			negativosMedia.put(i, 0.0);
-			negativosDev.put(i, 0.0);
-
 			listaValoresPositivos.add(new ArrayList<Double>());
 			listaValoresNegativos.add(new ArrayList<Double>());
 		}
 	}
 
-	private double Media(double novoValor, double mediaAtual, int total) {
-		double media = (novoValor + mediaAtual) / total;
-		return media;
+	private double Media(int total, List<Double> valores) {
+		double soma = 0;
+		for (Double valor : valores) {
+			soma += valor;
+		}
+		return soma / total;
 	}
 
 	private double Desvio(List<Double> valores, double media, int total) {
 		double temp = 0;
 		for (Double valor : valores) {
-			temp += (valor - media) * (valor - media);
+			temp += ((valor - media) * (valor - media));
 		}
-		double variancia = temp / (total);
+		double variancia = temp / (total - 1);
 		double desvio = Math.sqrt(variancia);
 		return desvio;
 	}
@@ -87,13 +83,7 @@ public class NaiveBayes {
 		for (int i = 1; i < linha.length; i++) { // i = 1 pq o primeiro atributo
 													// é o nome do doc
 			double valor = Double.parseDouble(linha[i]);
-			double media = positivosMedia.get(i);
-			double novaMedia = Media(valor, media, totalPositivo);
-			positivosMedia.put(i, novaMedia);
-
 			listaValoresPositivos.get(i).add(valor);
-			double desvio = Desvio(listaValoresPositivos.get(i), novaMedia, totalPositivo);
-			positivosDev.put(i, desvio);
 		}
 	}
 
@@ -102,13 +92,26 @@ public class NaiveBayes {
 		for (int i = 1; i < linha.length; i++) { // i = 1 pq o primeiro atributo
 													// é o nome do doc
 			double valor = Double.parseDouble(linha[i]);
-			double media = negativosMedia.get(i);
-			double novaMedia = Media(valor, media, totalNegativo);
-			negativosMedia.put(i, novaMedia);
-
 			listaValoresNegativos.get(i).add(valor);
-			double desvio = Desvio(listaValoresNegativos.get(i), novaMedia, totalNegativo);
-			negativosDev.put(i, desvio);
+		}
+	}
+
+	public void aprender() {
+		double mediaPos;
+		double mediaNeg;
+		double desvioPos;
+		double desvioNeg;
+
+		for (int i = 1; i < listaValoresNegativos.size(); i++) {
+			mediaPos = Media(totalPositivo, listaValoresPositivos.get(i));
+			positivosMedia.put(i, mediaPos);
+			desvioPos = Desvio(listaValoresPositivos.get(i), mediaPos, totalPositivo);
+			positivosDev.put(i, desvioPos);
+
+			mediaNeg = Media(totalNegativo, listaValoresNegativos.get(i));
+			negativosMedia.put(i, mediaNeg);
+			desvioNeg = Desvio(listaValoresNegativos.get(i), mediaNeg, totalNegativo);
+			negativosDev.put(i, desvioNeg);
 		}
 	}
 
@@ -120,6 +123,9 @@ public class NaiveBayes {
 			scorePos += Densidade(i, Double.parseDouble(texto[i]), "positivo");
 			scoreNeg += Densidade(i, Double.parseDouble(texto[i]), "negativo");
 		}
+
+		scorePos = scorePos + totalPositivo / (totalPositivo + totalNegativo);
+		scoreNeg = scoreNeg + totalNegativo / (totalPositivo + totalNegativo);
 		System.out.println("score pos: " + scorePos);
 		System.out.println("score neg: " + scoreNeg);
 
