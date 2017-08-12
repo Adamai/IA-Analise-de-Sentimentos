@@ -15,7 +15,7 @@ public class Teste {
 			leitor.lerArquivo();
 			List<String[]> linhas = leitor.getLinhas();
 			Collections.shuffle(linhas);
-			
+
 			// Passa a quantidade de palavras como parametro
 			NaiveBayes NB = new NaiveBayes(linhas.get(0).length);
 
@@ -28,39 +28,32 @@ public class Teste {
 			for (String[] linha : linhas) {
 				if (linha[0].contains("document")) {
 					// primeira linha, não faz nada
-				} else if (linha[0].contains("positivo") && qtdPos < 600) {
+				} else if (linha[0].contains("positivo") && qtdPos < 800) {
 					NB.treinaPositivo(linha);
 					qtdPos++;
-				} else if (linha[0].contains("negativo") && qtdNeg < 600) {
+				} else if (linha[0].contains("negativo") && qtdNeg < 800) {
 					NB.treinaNegativo(linha);
 					qtdNeg++;
 				} else {
 					execucao.add(linha);
 				}
 			}
-			
-			NB.aprender();
-			
-//			StringBuffer resposta = new StringBuffer();
-//			for(int i = 1; i < 600; i++){
-//				resposta.append(NB.positivosMedia.get(i));
-//				resposta.append("\n");
-//			}			
-//			System.out.println(resposta.toString());
 
-			int countPos = 0;
-			int countNeg = 0;
-			for (int i = 0; i < 800; i++) {
+			NB.aprender();
+
+
+			for (int i = 0; i < execucao.size(); i++) {
 				String resultado = NB.classificar(execucao.get(i));
-				if(resultado.equals("Positivo"))
-					countPos++;
-				else
-					countNeg++;
-//				String[] linha = execucao.get(i);
-//				System.out.println("Era " + linha[0]);
-//				System.out.println("Classificou como : " + resultado);
+				String[] aux = execucao.get(i);
+				NB.preencherMatriz(aux[0], resultado);
 			}
-			System.out.println("Positivos: " + countPos+", " + "Negativos: "+countNeg);
+			NB.imprimeMatriz();
+			System.out.println();
+			System.out.println("Acuracia = " + NB.acuracia(execucao.size()));
+			System.out.println("Erro = " + NB.erro(execucao.size()));
+			System.out.println("Precisão = " + NB.precisao());
+			System.out.println("Relevancia = " + NB.relevancia());
+			System.out.println("F-Measure = " + NB.Fmeasure());
 
 		} catch (Exception e) {
 			e.printStackTrace();

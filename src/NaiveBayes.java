@@ -28,12 +28,15 @@ public class NaiveBayes {
 
 	private int totalPositivo = 0;// total de exemplos positivos
 	private int totalNegativo = 0;// total de exemplos negativos
+	private int[][] matriz;
 
 	public NaiveBayes(int tamanho) {
 		for (int i = 0; i < tamanho; i++) {
 			listaValoresPositivos.add(new ArrayList<Double>());
 			listaValoresNegativos.add(new ArrayList<Double>());
 		}
+
+		matriz = new int[2][2];
 	}
 
 	private double Media(int total, List<Double> valores) {
@@ -51,6 +54,8 @@ public class NaiveBayes {
 		}
 		double variancia = temp / (total - 1);
 		double desvio = Math.sqrt(variancia);
+		if (desvio == 0)
+			desvio = 0.0001;
 		return desvio;
 	}
 
@@ -126,13 +131,76 @@ public class NaiveBayes {
 
 		scorePos = scorePos + totalPositivo / (totalPositivo + totalNegativo);
 		scoreNeg = scoreNeg + totalNegativo / (totalPositivo + totalNegativo);
-		System.out.println("score pos: " + scorePos);
-		System.out.println("score neg: " + scoreNeg);
+		// System.out.println("score pos: " + scorePos);
+		// System.out.println("score neg: " + scoreNeg);
 
 		if (scorePos >= scoreNeg)
-			return "Positivo";
+			return "positivo";
 		else
-			return "Negativo";
+			return "negativo";
+	}
+
+	public void preencherMatriz(String real, String previsto) {
+		if (real.contains("positivo") && previsto.equals("positivo")) {
+			matriz[0][0]++;
+		} else if (real.contains("positivo") && previsto.equals("negativo")) {
+			matriz[0][1]++;
+		} else if (real.contains("negativo") && previsto.equals("positivo")) {
+			matriz[1][0]++;
+		} else
+			matriz[1][1]++;
+	}
+
+	public void imprimeMatriz() {
+
+		System.out.println("Matriz de confusão");
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < 2; j++) {
+				System.out.print(matriz[i][j] + " ");
+			}
+			System.out.println();
+		}
+	}
+
+	public double acuracia(double total) {
+		double acuracia;
+
+		acuracia = (matriz[0][0] + matriz[1][1]) / total;
+		// System.out.println("Acurácia = " + acuracia);
+		return acuracia;
+	}
+
+	public double erro(double total) {
+		double erro;
+
+		erro = (matriz[1][0] + matriz[0][1]) / total;
+		// System.out.println("Erro = " + erro);
+		return erro;
+	}
+
+	public double precisao() {
+		double precisao;
+		double divisor = matriz[0][0] + matriz[1][0];
+
+		precisao = matriz[0][0] / divisor;
+		// System.out.println("Precisao =" + precisao);
+		return precisao;
+	}
+
+	public double relevancia() {
+		double relevancia;
+		double divisor = matriz[0][0] + matriz[0][1];
+
+		relevancia = matriz[0][0] / divisor;
+		return relevancia;
+	}
+
+	public double Fmeasure() {
+		double Fmeasure;
+		double aux = (precisao() * relevancia()) / (precisao() + relevancia());
+
+		Fmeasure = 2 * aux;
+		return Fmeasure;
 	}
 
 }
