@@ -58,5 +58,17 @@ public class Teste {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		/*
+		double valor = 1 ;
+		double media = 2.5 ;
+		double desvio = 0.70711 ;
+		double densidade = 0.0;
+		double dividendo = (Math.pow(Math.E,
+				-(Math.pow(valor - media, 2)) / (2 * Math.pow(desvio, 2))));
+		double divisor = (desvio * Math.sqrt(2 * Math.PI));
+		if (divisor != 0)
+			densidade = dividendo / divisor;
+		System.out.println("densidade = "+densidade); */
+		
 	}
 }
