@@ -28,10 +28,10 @@ public class Teste {
 			for (String[] linha : linhas) {
 				if (linha[0].contains("document")) {
 					// primeira linha, não faz nada
-				} else if (linha[0].contains("positivo") && qtdPos < 800) {
+				} else if (linha[0].contains("positivo") && qtdPos < 667) {
 					NB.treinaPositivo(linha);
 					qtdPos++;
-				} else if (linha[0].contains("negativo") && qtdNeg < 800) {
+				} else if (linha[0].contains("negativo") && qtdNeg < 667) {
 					NB.treinaNegativo(linha);
 					qtdNeg++;
 				} else {

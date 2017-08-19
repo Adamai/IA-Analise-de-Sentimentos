@@ -70,7 +70,7 @@ public class NaiveBayes {
 			auxDev = negativosDev;
 		}
 
-		double densidade = 0.0;
+		double densidade = 0.5;
 
 		double dividendo = (Math.pow(Math.E,
 				-(Math.pow(valor - auxMedia.get(palavra), 2)) / (2 * Math.pow(auxDev.get(palavra), 2))));
@@ -80,7 +80,7 @@ public class NaiveBayes {
 		if (divisor != 0)
 			densidade = dividendo / divisor;
 
-		return densidade;
+		return Math.log(densidade);
 	}
 
 	public void treinaPositivo(String[] linha) {
